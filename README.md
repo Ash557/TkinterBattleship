@@ -5,4 +5,4 @@ GUI of the game Battleship using Python Tkinter
 Utilize Python Tkinter and a module type file structure 
 
 # Future
-- increase functionality to enable another mode to allow two players to play, as well as player against computer. 
+- Increase functionality to enable another mode to allow two players to play, as well as player against computer. 
