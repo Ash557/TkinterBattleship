@@ -6,6 +6,8 @@ How to use [Windows PC] :
 - Open Command Prompt
 - Navigate to where you want to store the code
 - Clone repository
+- Run GamePlay.py
+- Enjoy!
 
 # Goal
 Utilize Python Tkinter and a module type file structure 
