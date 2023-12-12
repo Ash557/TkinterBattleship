@@ -1,21 +1,31 @@
+#!/usr/bin/env python #
+"""
+	GamePlay Object
+	- Creates the window
+	- Creates the Player
+	- Creates the Enemy
+	- Runs the actual game
+
+	Main
+	- Runs Game
+
+	Organized in order to enable future additions
+"""
+
 from Window import Display
 from Enemy import Enemy
 from Player import Player
 
 class GamePlay():
 	def __init__(self) :
-		#create window
+		# Create window
 		self.DisplayWindow = Display()
 		
-		#create game player and enemy(computer)
+		# Create game player and enemy(computer)
 		self.GamePlayer = Player(self.DisplayWindow)
 		self.GameEnemy = Enemy(self.DisplayWindow, self.GamePlayer)
 
-		for x in range(10) :
-			for y in range(10) :
-				self.GameEnemy.ButtonList[x][y].config(command = lambda x=x, y=y : self.GameEnemy.Hit_Miss(x, y))
-
-		#finally, begin the game
+		# Finally, begin the game
 		self.DisplayWindow.Root.mainloop()
 
 

@@ -1,3 +1,15 @@
+#!/usr/bin/env python #
+"""
+	Ship Object
+	- Stores Object data for each Ship
+	- Determines if a Ship has been sunk
+
+	ShipYard Object
+	- Stores Object data for each ShipYard
+	- Initializes 5 classic ships for the game Battleship
+	- Has a master list of Ship locations for easy query
+"""
+
 class Ship():
 	def __init__(self, name, length) :
 		self.Name = name
@@ -10,7 +22,7 @@ class Ship():
 		self.Horizontal = not self.Horizontal
 
 	def Ship_Hit(self) :
-		self.Hits = self.Hits + 1
+		self.Hits += 1
 
 	def Ship_Sunk(self) :
 		if self.Hits == self.Length :

@@ -1,3 +1,11 @@
+#!/usr/bin/env python #
+"""
+	Player
+	- Place Player Ships
+	- Configure Player buttons
+	- Set up for Gameplay
+"""
+
 from Ship import ShipYard
 from Window import Display
 import tkinter
@@ -13,7 +21,7 @@ class Player() :
 
 		Display.PlayerFrame.Change_Buttons_States("normal")
 
-		#configure all player buttons to place ship function and to be hover buttons
+		# Configure all player buttons to place ship function and to be hover buttons
 		for x in range(10) :
 			for y in range(10) :
 				self.ButtonList[x][y].config(command = lambda x=x, y=y : self.Place_Ship(x, y))
@@ -21,7 +29,7 @@ class Player() :
 				self.ButtonList[x][y].bind("<Leave>", lambda event, x=x, y=y : self.On_Leave(x, y))
 
 
-		#create change orientation button for bottom of player frame
+		# Create change orientation button for bottom of player frame
 		self.ChangeOrientationButton = tkinter.Button(	Display.PlayerFrame, 
 											bg = "grey", 
 											text = "Change Orientation", 
@@ -30,7 +38,7 @@ class Player() :
 										)
 		self.ChangeOrientationButton.grid(row = 4, column = 0, sticky = "NSEW")
 
-	#change button color to purple during hover
+	# Change button color to purple during hover
 	def On_Enter(self, x, y) :
 		if self.CurrentShip.Horizontal == False and (x+self.CurrentShip.Length-1) < 10 : 
 			for p in range(self.CurrentShip.Length) :
@@ -39,7 +47,7 @@ class Player() :
 			for p in range(self.CurrentShip.Length) :
 				self.ButtonList[x][y+p].config(bg = "purple")
 
-	#change button color back to grey after leaving button hover area
+	# Change button color back to grey after leaving button hover area
 	def On_Leave(self, x, y) :
 		if self.CurrentShip.Horizontal == False and (x+self.CurrentShip.Length-1) < 10 : 
 			for p in range(self.CurrentShip.Length) :
@@ -48,7 +56,7 @@ class Player() :
 			for p in range(self.CurrentShip.Length) :
 				self.ButtonList[x][y+p].config(bg = "grey")
 
-	#place ship on board
+	# Place ship on board
 	def Place_Ship(self, x, y) :
 		success = True
 		if self.CurrentShip.Horizontal == False and (x+self.CurrentShip.Length-1) < 10 :
@@ -83,7 +91,7 @@ class Player() :
 				self.Display.MessageText.set(self.Display.MessageText.get() + "\n" + "Placed Ship " + self.CurrentShip.Name)
 				self.Next_Ship()
 			else :
-				self.Display.MessageText.set("All Ships Placed")
+				self.Display.MessageText.set(self.Display.MessageText.get() + "\n" + "All Ships Placed. You may begin the game.")
 				self.Display.PlayerFrame.Change_Buttons_States("disable")
 				self.Display.EnemyFrame.Change_Buttons_States("normal")
 				self.ChangeOrientationButton.destroy()
