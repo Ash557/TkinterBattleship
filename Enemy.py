@@ -6,7 +6,7 @@
 	- Randomly chooses a spot to go, until a ship is found and prioritized to sink
 
 	Current Bugs :
-		Try location out of bounds - need to fix function Find_Priority_Location
+		Enemy does not register the Destroyer ship where it is originally placed
 """
 
 from Ship import ShipYard
@@ -92,6 +92,7 @@ class Enemy():
 			for ship in self.ShipYard.ShipList : # Find the ship
 				for coordinates in ship.Location : # Find the coordinates
 					if coordinates == [x, y] : # If they match, change hit count
+						# print("x:" + str(x) + " y:" + str(y)) # DEBUG
 						# Change button color to red
 						self.ButtonList[x][y].config(state = "disable", bg = "red")
 						ship.Ship_Hit()
@@ -143,27 +144,37 @@ class Enemy():
 			self.CheckDirection = "Right"
 		return Direction
 
-	def Find_Priority_Location(self) :
-		TryThis = [] # Clear out any previous location to ensure no incorrect data slips through
-
-		while (TryThis in self.Locations_Used or TryThis is None): 
-			if self.PriorityShipDirection is None : # Haven't found the direction of the ship yet
-				if self.CheckDirection == "Right" : TryThis = [self.LastLocationOfShip[0]+1, self.LastLocationOfShip[1]]
-				elif self.CheckDirection == "Left" : TryThis = [self.LastLocationOfShip[0]-1, self.LastLocationOfShip[1]]
-				elif self.CheckDirection == "Up" : TryThis = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]-1]
-				elif self.CheckDirection == "Down" : TryThis = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]+1]
-				
-			else : # Self.PriorityShipDirection is not None - means we have found the direction of the ship already
-				if self.PriorityShipDirection == "Right" : TryThis = [self.LastLocationOfShip[0]+1, self.LastLocationOfShip[1]]
-				elif self.PriorityShipDirection == "Left" : TryThis = [self.LastLocationOfShip[0]-1, self.LastLocationOfShip[1]]
-				elif self.PriorityShipDirection == "Up" : TryThis = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]-1]
-				elif self.PriorityShipDirection == "Down" : TryThis = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]+1]
-
-		return TryThis
-
 	def Take_Enemy_Turn(self) :
 		if self.Priority == True :
-			TryLocation = self.Find_Priority_Location()
+			TryLocation = []
+			if self.PriorityShipDirection is None :
+				while (self.CheckDirection == "Right" and self.LastLocationOfShip[1] >= 9) or (self.CheckDirection == "Left" and self.LastLocationOfShip[1] <= 0) or (self.CheckDirection == "Up" and self.LastLocationOfShip[0] <= 0) or (self.CheckDirection == "Down" and self.LastLocationOfShip[0] >= 9) :
+					self.LastLocationOfShip = self.PriorityShipLocation[0]
+					self.CheckDirection = self.Rotate_Directions(self.CheckDirection)
+
+				if self.CheckDirection == "Right" :
+					TryLocation = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]+1]
+				elif self.CheckDirection == "Left" :
+					TryLocation = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]-1]
+				elif self.CheckDirection == "Up" :
+					TryLocation = [self.LastLocationOfShip[0]-1, self.LastLocationOfShip[1]]
+				elif self.CheckDirection == "Down" :
+					TryLocation = [self.LastLocationOfShip[0]+1, self.LastLocationOfShip[1]]
+				
+			else : #self.PriorityShipDirection is not None
+				if (self.PriorityShipDirection == "Right" and self.LastLocationOfShip[1] >= 9) or (self.PriorityShipDirection == "Left" and self.LastLocationOfShip[1] <= 0) or (self.PriorityShipDirection == "Up" and self.LastLocationOfShip[0] <= 0) or (self.PriorityShipDirection == "Down" and self.LastLocationOfShip[0] >= 9) :
+					self.LastLocationOfShip = self.PriorityShipLocation[0]
+					self.PriorityShipDirection = self.Flip_Directions(self.PriorityShipDirection)
+
+				if self.PriorityShipDirection == "Right" :
+					TryLocation = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]+1]
+				elif self.PriorityShipDirection == "Left" :
+					TryLocation = [self.LastLocationOfShip[0], self.LastLocationOfShip[1]-1]
+				elif self.PriorityShipDirection == "Up" :
+					TryLocation = [self.LastLocationOfShip[0]-1, self.LastLocationOfShip[1]]
+				elif self.PriorityShipDirection == "Down" :
+					TryLocation = [self.LastLocationOfShip[0]+1, self.LastLocationOfShip[1]]
+				
 
 			# Add location to list of locations already used
 			self.Locations_Used.append(TryLocation)
@@ -172,7 +183,7 @@ class Enemy():
 			if TryLocation in self.GamePlayer.ShipYard.ShipLocations :
 				self.Hits += 1
 				self.Display.EnemyFrame.HitText.set("Hits: " + str(self.Hits))
-				
+	
 				self.Display.PlayerFrame.ButtonList[TryLocation[0]][TryLocation[1]].config(bg = "Red")
 				self.PriorityShipDirection = self.CheckDirection
 				self.PriorityShip.Ship_Hit()
@@ -184,6 +195,12 @@ class Enemy():
 					self.Display.EnemyFrame.SunkText.set(self.Display.EnemyFrame.SunkText.get() + "\n" + self.PriorityShip.Name + " Sunk")
 					self.Reset_Priority_Ship()
 					self.Priority = False
+				
+				# The enemy has won!
+				if self.Hits >= 17: 
+					self.Display.MessageText.set("Winner is... Enemy!")
+					self.Display.PlayerFrame.Change_Buttons_States("disable")
+					self.Display.EnemyFrame.Change_Buttons_States("disable")
 				
 
 			else : # Miss
